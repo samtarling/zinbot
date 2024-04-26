@@ -2,6 +2,7 @@
 from contextlib import contextmanager
 import datetime as dt
 from enum import Enum
+from datetime import datetime
 import json
 from typing import Any, Generator
 
@@ -111,6 +112,20 @@ class OnWikiLogger:
                 'message': message.value.format(page=page, **formatters),
                 'timestamp': timestamp.strftime(self._timestampformat)
             })
+
+def gettimestamp() -> str:
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+  
+
+def log_local_misc(message: str, logfile: str) -> None:
+    """Append a message to a document in folder `logs/`.
+
+    Args:
+      message:  A str to log.
+      logfile:  A file (extant or not) in folder `logs/`.
+    """
+    with open(f"logs/{logfile}", 'a', encoding='utf-8') as f:
+        f.write(f"{message}\n")
 
 
 def log_local(title: Title, logfile: str) -> None:

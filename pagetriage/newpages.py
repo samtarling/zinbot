@@ -2,6 +2,7 @@
 from typing import Any, Literal
 
 from pywikibot import Page
+from datetime import datetime
 
 import api
 from api import RequestParams
@@ -14,7 +15,6 @@ Queue = list[dict[str, Any]]
 
 class QueueError(ZBError):
     """Error raised in interacting with the queue."""
-
 
 def checkqueue() -> None:
     """Loop through NewPagesFeed, 200 items at a time.
@@ -36,11 +36,11 @@ def checkqueue() -> None:
             page_title = page_data['title']
             page = api.get_page(page_title)
             if rfd.check_rfd(page):
-                print(f"***MATCH*** on {page_title=}")
+                print(f"[{logging_.gettimestamp()}] ***MATCH*** on {page_title=}")
                 _review(page)
                 unreviewed_titles.remove(page_title)
             else:
-                print(f"No match on {page_title=}")
+                print(f"[{logging_.gettimestamp()}] No match on {page_title=}")
         try:
             last: int = queue[-1]['creation_date']
         except KeyError as e:  # Unlikely to ever happen but...
@@ -55,7 +55,7 @@ def checkqueue() -> None:
         if not newqueue or queue[-1]['pageid'] == newqueue[-1]['pageid']:
             break
         queue = newqueue
-    print("Queue complete. Checking if log cleanup is necessary.")
+    print(f"[{logging_.gettimestamp()}] Queue complete. Checking if log cleanup is necessary.")
     rfd.cleanup(unreviewed_titles)
 
 
@@ -84,6 +84,7 @@ def _buildqueue(show: list[Literal['showredirs', 'showdeleted', 'showothers']],
                               'date_range_from': start}
                              | {i: True for i in show})
     queue: Queue = api.get(params)['pagetriagelist']['pages']
+    logging_.log_local_misc(f"[{logging_.gettimestamp()}] Queue built", "debug.txt")
     return queue
 
 
