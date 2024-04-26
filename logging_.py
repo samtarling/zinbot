@@ -124,7 +124,7 @@ def log_local_misc(message: str, logfile: str) -> None:
       message:  A str to log.
       logfile:  A file (extant or not) in folder `logs/`.
     """
-    with open(f"logs/{logfile}", 'a', encoding='utf-8') as f:
+    with open(f"logs/{logfile}", 'a+', encoding='utf-8') as f:
         f.write(f"{message}\n")
 
 
@@ -135,5 +135,5 @@ def log_local(title: Title, logfile: str) -> None:
       title:  A str of a title that should be logged.
       logfile:  A file (extant or not) in folder `logs/`.
     """
-    with open(f"logs/{logfile}", 'a', encoding='utf-8') as f:
+    with open(f"logs/{logfile}", 'a+', encoding='utf-8') as f:
         f.write(f"{title} <{constants.WIKI_URL}{title.as_url}>\n")
