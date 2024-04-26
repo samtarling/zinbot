@@ -36,10 +36,12 @@ def checkqueue() -> None:
             page_title = page_data['title']
             page = api.get_page(page_title)
             if rfd.check_rfd(page):
+                logging_.log_local_misc(f"[{logging_.gettimestamp()}] ***MATCH*** on {page_title=}", "debug.txt")
                 print(f"[{logging_.gettimestamp()}] ***MATCH*** on {page_title=}")
                 _review(page)
                 unreviewed_titles.remove(page_title)
             else:
+                logging_.log_local_misc(f"[{logging_.gettimestamp()}] No match on {page_title=}" "debug.txt")
                 print(f"[{logging_.gettimestamp()}] No match on {page_title=}")
         try:
             last: int = queue[-1]['creation_date']
@@ -55,6 +57,7 @@ def checkqueue() -> None:
         if not newqueue or queue[-1]['pageid'] == newqueue[-1]['pageid']:
             break
         queue = newqueue
+    logging_.log_local_misc(f"[{logging_.gettimestamp()}] Queue complete. Checking if log cleanup is necessary.", "debug.txt")
     print(f"[{logging_.gettimestamp()}] Queue complete. Checking if log cleanup is necessary.")
     rfd.cleanup(unreviewed_titles)
 
@@ -99,5 +102,6 @@ def _review(page: Page) -> None:
               'pageid': page.pageid,
               'reviewed': 1,
               'skipnotif': True})  # May change based on community's feelings.
+    logging_.log_local_misc(f"Reviewed {page_title}", "debug.txt")
     print(f"Reviewed {page_title}")
     logging_.log_local(page_title, "reviewedpages.txt")
