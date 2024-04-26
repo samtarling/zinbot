@@ -41,7 +41,7 @@ def checkqueue() -> None:
                 _review(page)
                 unreviewed_titles.remove(page_title)
             else:
-                logging_.log_local_misc(f"[{logging_.gettimestamp()}] No match on {page_title=}" "debug.txt")
+                logging_.log_local_misc(f"[{logging_.gettimestamp()}] No match on {page_title=}", "debug.txt")
                 print(f"[{logging_.gettimestamp()}] No match on {page_title=}")
         try:
             last: int = queue[-1]['creation_date']
