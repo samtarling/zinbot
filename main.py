@@ -25,4 +25,4 @@ if __name__ == "__main__":
         run()
         logging_.log_local_misc(f"[{logging_.gettimestamp()}] Run done. Sleeping.", "debug.txt")
         print("Run done. Sleeping.")
-        time.sleep(1800)
+        time.sleep(3)

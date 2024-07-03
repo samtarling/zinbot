@@ -1,4 +1,5 @@
 """Functions for interacting with the NewPagesFeed."""
+import time
 from typing import Any, Literal
 
 from pywikibot import Page
@@ -34,6 +35,16 @@ def checkqueue() -> None:
         unreviewed_titles += [i['title'] for i in queue]
         for page_data in queue:
             page_title = page_data['title']
+            
+            print(f"Checking {page_title=}")
+            logging_.log_local_misc(f"[{logging_.gettimestamp()}] Checking {page_title=}", "debug.txt")
+            
+            is_redirect, afd_status, blp_prod_status, csd_status, prod_status = page_data['is_redirect'], page_data['afd_status'], page_data['blp_prod_status'], page_data['csd_status'], page_data['prod_status']
+            state_debug = f"is_redirect: {is_redirect},\nafd_status: {afd_status},\nblp_prod_status: {blp_prod_status},\ncsd_status: {csd_status},\nprod_status: {prod_status}"
+            print(state_debug)
+            logging_.log_local_misc(state_debug, "debug.txt")
+            time.sleep(1)  # Slower for debugging
+            
             page = api.get_page(page_title)
             if rfd.check_rfd(page):
                 logging_.log_local_misc(f"[{logging_.gettimestamp()}] ***MATCH*** on {page_title=}", "debug.txt")
@@ -43,6 +54,9 @@ def checkqueue() -> None:
             else:
                 logging_.log_local_misc(f"[{logging_.gettimestamp()}] No match on {page_title=}", "debug.txt")
                 print(f"[{logging_.gettimestamp()}] No match on {page_title=}")
+
+            logging_.log_local_misc("\n", "debug.txt")
+
         try:
             last: int = queue[-1]['creation_date']
         except KeyError as e:  # Unlikely to ever happen but...
@@ -84,8 +98,12 @@ def _buildqueue(show: list[Literal['showredirs', 'showdeleted', 'showothers']],
                               'showunreviewed': True,
                               'dir': 'oldestfirst',
                               'limit': 200,
+                              'showredirs': True,
                               'date_range_from': start}
                              | {i: True for i in show})
+    print(f"Building queue with {params=}")
+    logging_.log_local_misc(f"[{logging_.gettimestamp()}] Building queue with {params=}", "debug.txt")
+    
     queue: Queue = api.get(params)['pagetriagelist']['pages']
     logging_.log_local_misc(f"[{logging_.gettimestamp()}] Queue built", "debug.txt")
     return queue
